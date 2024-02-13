@@ -23,7 +23,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 	array <JGPUFH_PowerupData> powerupData;
 	array <MapMarker> mapMarkers;
 	bool levelUnloaded;
-	
+
 	//Generic shapes
 	ui transient Shape2D shape_square;
 	ui transient Shape2D shape_disk;
@@ -59,7 +59,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 	ui double armMaxamount;
 	ui bool hasHexenArmor;
 	ui color armorColor;
-	
+
 	// Hexen armor data:
 	const WEAKEST_HEXEN_ARMOR_PIECE = 3;
 	ui TextureID hexenArmorIcons[WEAKEST_HEXEN_ARMOR_PIECE+1];
@@ -86,7 +86,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 	ui transient Shape2DTransform reticleMarkerTransform;
 	ui double reticleMarkerAlpha;
 	ui double reticleMarkerScale;
-	
+
 	// Weapon slots
 	const MAXWEAPONSLOTS = 10;
 	const SLOTSDISPLAYDELAY = TICRATE * 2;
@@ -172,13 +172,13 @@ class JGPUFH_FlexibleHUD : EventHandler
 		DM_ALWAYS,
 	}
 
-	clearscope double LinearMap(double val, double source_min, double source_max, double out_min, double out_max, bool clampIt = false) 
+	clearscope double LinearMap(double val, double source_min, double source_max, double out_min, double out_max, bool clampIt = false)
 	{
 		double sourceDiff = (source_max - source_min);
 		if (sourceDiff == 0)
 			sourceDiff = 1;
 		double d = (val - source_min) * (out_max - out_min) / sourceDiff + out_min;
-		if (clampit) 
+		if (clampit)
 		{
 			double truemax = out_max > out_min ? out_max : out_min;
 			double truemin = out_max > out_min ? out_min : out_max;
@@ -196,7 +196,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 	{
 		return !mo.player || !mo.player.mo || mo.player.mo != mo;
 	}
-	
+
 	override void WorldThingSpawned(worldEvent e)
 	{
 		// A wild PowerupGiver spawns!
@@ -261,13 +261,13 @@ class JGPUFH_FlexibleHUD : EventHandler
 	{
 		if (powerupData.Size() > 0)
 			return;
-		
+
 		for (int i = 0; i < AllActorClasses.Size(); i++)
 		{
 			let cls = AllActorClasses[i];
 			if (!cls)
 				continue;
-			
+
 			let pwrg = (class<PowerupGiver>)(cls);
 			if (pwrg)
 			{
@@ -370,13 +370,15 @@ class JGPUFH_FlexibleHUD : EventHandler
 	{
 		if (initDone)
 			return;
-		
-		smallHUDFont = HUDFont.Create(newConsoleFont);
-		Font fnt = "Confont";
-		mainHUDFont = HUDFont.Create(fnt);
-		fnt = "IndexFont";
+
+		Font fnt;
+		fnt = "SHAFONT"; //"NewConsoleFont";
+		smallHUDFont = HUDFont.Create(fnt, fnt.GetCharWidth("0"), true);
+		fnt = "SHAFONT"; //"Confont";
+		mainHUDFont = HUDFont.Create(fnt, fnt.GetCharWidth("0"), true);
+		fnt = "SHAFONT"; //"IndexFont";
 		numHUDFont = HUDFont.Create(fnt, fnt.GetCharWidth("0"), true);
-		
+
 		GetCustomItemsList();
 
 		initDone = smallHUDFont && smallHUDFont.mFont && mainHUDFont && mainHUDFont.mFont && numHUDFont && numHUDFont.mFont;
@@ -448,7 +450,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 			UpdateReticleBars(deltaTime);
 			UpdateEnemyHitMarker(deltaTime);
 		}
-		
+
 		// Do not draw stuff if automap is open. This is,
 		// because, one, if the user is using one of the
 		// vanilla HUDs, a statusbar version will already
@@ -485,7 +487,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 		if (real)
 		{
 			screenSize = (Screen.GetWidth(), Screen.GetHeight());
-			// Don't forget to get rid of the aspect correction if 
+			// Don't forget to get rid of the aspect correction if
 			// the hud_aspectscale CVAR is in use, because the
 			// element's position must follow the angles properly
 			// (mostly used by the automap):
@@ -619,7 +621,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 		{
 			col = fillcol;
 		}
-		
+
 		// Draw flat color fill:
 		if (c_BackStyle.GetBool() || !tex || !tex.IsValid())
 		{
@@ -632,14 +634,14 @@ class JGPUFH_FlexibleHUD : EventHandler
 		color texCol = fillcol.a == 0 ? 0xffffffff : fillcol;
 		Vector2 box = (width, height);
 		Vector2 pos = (xPos, yPos);
-		
+
 		// Stretch to fit mode:
 		if (c_BackTextureStretch.GetBool())
 		{
 			statusbar.DrawTexture(tex, pos, flags, alpha, box, col: texCol);
 			return;
 		}
-		
+
 		// Otherwise tile the texture:
 
 		// Get texture size and aspect ratio:
@@ -658,7 +660,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 			// Modify width slightly so that the textures will fit
 			// in the box without clipping mid-texture:
 			box.x = width / steps;
-			
+
 			// Draw the texture the necessary number of times:
 			for (int i = 0; i < steps; i++)
 			{
@@ -743,7 +745,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 		Vector2 innerBarPos = (barpos.x + indent, barpos.y + indent);
 		// Get the current bar size according to the provided values:
 		double curInnerBarWidth = LinearMap(curValue, 0, maxValue, 0, innerBarWidth, true);
-		
+
 		// Draw segmented bar:
 		if (sparsity > 0 && segments > 0)
 		{
@@ -775,7 +777,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 					if (altColor)
 						col = color(barcolor.a, r,g,b);
 					altColor = !altColor;
-				}				
+				}
 				double segW = min(singleSegWidth, curInnerBarWidth - segPos.x + innerBarPos.x);
 				statusbar.Fill(col, segPos.x, segPos.y, segW, innerBarHeight, flags);
 				segPos.x += singleSegWidth + sparsity;
@@ -794,7 +796,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 			fy = Clamp(fy, 2, barheight);
 			statusbar.DrawString(numHUDFont, ""..int(curvalue), barpos + (barwidth * 0.5, barheight * 0.5 - fy * 0.5), flags|StatusBarCore.DI_TEXT_ALIGN_CENTER, translation: valueColor);
 		}
-		
+
 		if (rightText)
 		{
 			statusbar.DrawString(mainHUDFont, ""..rightText, barpos + (barwidth + 1, 0), flags|StatusBarCore.DI_TEXT_ALIGN_LEFT);
@@ -820,7 +822,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 				cFntCol = Font.CR_Cyan;
 			}
 		}
-		else 
+		else
 		{
 			cFntCol = Font.CR_Brown;
 			cRed = 72;
@@ -861,7 +863,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 		{
 			if (!AllActorClasses[i])
 				continue;
-			
+
 			let hexArm = (class<HexenArmor>)(AllActorClasses[i]);
 			// don't cache the base HexenArmor class itself:
 			if (hexArm && hexArm != 'HexenArmor')
@@ -1029,13 +1031,13 @@ class JGPUFH_FlexibleHUD : EventHandler
 		color crossCol = hasBerserk ? color(255,255,0,0) : color(255,0,0,0);
 		statusbar.Fill(crossCol, crossPos.x - crossWidth*0.5,  crossPos.y - crossLength*0.5, crossWidth, crossLength, barFlags);
 		statusbar.Fill(crossCol, crossPos.x - crossLength*0.5, crossPos.y - crossWidth*0.5, crossLength, crossWidth, barFlags);
-		
+
 		crossWidth -= hasBerserk ? 1.5 : 2;
 		crossLength -= hasBerserk ? 1.5 : 2;
 		crossCol = hasBerserk ? color(255,0,0,0) : color(255,255,255,255);
 		statusbar.Fill(crossCol, crossPos.x - crossWidth*0.5, crossPos.y - crossLength*0.5, crossWidth, crossLength, barFlags);
 		statusbar.Fill(crossCol, crossPos.x - crossLength*0.5, crossPos.y - crossWidth*0.5,  crossLength, crossWidth, barFlags);
-		
+
 		// Calculate bar width (it should be indented deeper
 		// from the edges and offset from the icon):
 		int barWidth = mainBlockWidth - iconSize - indent*3;
@@ -1057,7 +1059,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 		{
 			statusbar.DrawString(mainHUDFont, String.Format("%3d", health), (barPosX, iconPos.y - fy*0.5), flags, translation:GetPercentageFontColor(health,maxhealth));
 		}
-		
+
 		// Draw armor bar:
 		// Check if armor exists and is above 0
 		let barm = BasicArmor(CPlayer.mo.FindInventory("BasicArmor"));
@@ -1173,7 +1175,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 
 		int flags = SetScreenFlags(c_AmmoBlockPos.GetInt());
 		Vector2 ofs = ( c_AmmoBlockX.GetInt(), c_AmmoBlockY.GetInt() );
-		
+
 		// As usual, calculate total block size first to do the fill.
 
 		// Check if the weapon is using any ammo:
@@ -1203,7 +1205,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 				size.y += ammoBarHeight + indent*2;
 			}
 		}
-		
+
 		// If weapon icon is to be drawn (check CVAR and the validity of
 		// the icon), add its height and indentation to total height:
 		TextureID weapIcon = statusbar.GetIcon(weap, StatusBarCore.DI_FORCESCALE);
@@ -1223,7 +1225,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 		// Finally, adjust the position and draw fill:
 		Vector2 pos = AdjustElementPos((0,0), flags, (size.x, size.y), ofs);
 		BackgroundFill(pos.x, pos.y, size.x, size.y, flags);
-		
+
 		if (weapIconValid)
 		{
 			statusbar.DrawTexture(weapIcon, pos + (weapIconBox.x  * 0.5 + indent, size.y - weapIconBox.y * 0.5 - indent), flags|StatusBarCore.DI_ITEM_CENTER, box: (64, 18));
@@ -1359,7 +1361,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 		Ammo a1, a2;
 		[a1, a2] = statusbar.GetCurrentAmmo();
 		for (int i = 0; i < ammoItems.Size(); i++)
-		{			
+		{
 			Ammo am = ammoItems[i];
 			if (!am)
 				continue;
@@ -1371,11 +1373,11 @@ class JGPUFH_FlexibleHUD : EventHandler
 			}
 			// Draw ammo:
 			statusbar.DrawInventoryIcon(am, pos + (iconSize*0.5,iconSize*0.5), flags|StatusBarCore.DI_ITEM_CENTER, boxsize:(iconSize, iconSize));
-			statusbar.DrawString(hfnt, 
-				String.Format("%3d\cJ/\c-%3d", am.amount, am.maxamount), 
-				pos + (iconSize + indent, iconsize*0.5 -fy*0.5), 
-				flags|StatusBarCore.DI_TEXT_ALIGN_LEFT, 
-				translation: GetPercentageFontColor(am.amount, am.maxamount), 
+			statusbar.DrawString(hfnt,
+				String.Format("%3d\cJ/\c-%3d", am.amount, am.maxamount),
+				pos + (iconSize + indent, iconsize*0.5 -fy*0.5),
+				flags|StatusBarCore.DI_TEXT_ALIGN_LEFT,
+				translation: GetPercentageFontColor(am.amount, am.maxamount),
 				scale:(fntScale,fntScale)
 			);
 			pos.y += max(fy, iconsize) + indent;
@@ -1484,7 +1486,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 		double fy = hfnt.mFont.GetHeight() * fntScale;
 		double width = iconsize + indent*4 + hfnt.mFont.StringWidth("000/000") * fntScale;
 		double height = itemNum * (iconsize + indent);
-		
+
 		Vector2 pos = AdjustElementPos((0,0), flags, (width, height), ofs);
 		// visuals for preview mode:
 		double alpha = SinePulse(TICRATE*2, 0.2, 0.5, inMenus:true);
@@ -1625,7 +1627,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 			let dm = dmgMarkerController.markers[i];
 			if (!dm)
 				continue;
-			
+
 			// Vary width based on the amount of received damage:
 			double width = LinearMap(dm.damage, 0, 50, size*0.2, size, true);
 			dmgMarkerTransf.Clear();
@@ -1633,9 +1635,9 @@ class JGPUFH_FlexibleHUD : EventHandler
 			dmgMarkerTransf.Rotate(dm.GetAngle(Lerp(prevPlayerAngle, playerAngle, fracTic)));
 			dmgMarkerTransf.Translate((Screen.GetWidth() * 0.5, Screen.GetHeight() * 0.5));
 			dmgMarker.SetTransform(dmgMarkerTransf);
-			Screen.DrawShape(dmgMarkerTex, false, 
-				dmgMarker, 
-				DTA_LegacyRenderStyle, STYLE_Add, 
+			Screen.DrawShape(dmgMarkerTex, false,
+				dmgMarker,
+				DTA_LegacyRenderStyle, STYLE_Add,
 				DTA_Alpha, dm.alpha
 			);
 		}
@@ -1666,7 +1668,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 	{
 		if (!c_EnemyHitMarkersShape)
 			return null, 0;
-		
+
 		if (!reticleMarkerTransform)
 			reticleMarkerTransform = New("Shape2DTransform");
 
@@ -1764,7 +1766,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 				hitmarker_circle.PushTriangle(next, i + steps, nextInner);
 			}
 		}
-	
+
 		Shape2D shapeTouse;
 		double angle;
 		switch(c_EnemyHitMarkersShape.GetInt())
@@ -1798,7 +1800,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 	{
 		if (!c_DrawEnemyHitMarkers.GetBool())
 			return;
-		
+
 		Vector2 screenCenter = (Screen.GetWidth() * 0.5, Screen.GetHeight() * 0.5);
 		double alpha = reticleMarkerAlpha;
 		if (alpha <= 0)
@@ -1968,7 +1970,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 		bool autoHide = c_DrawReticleBars.GetInt() == DM_AUTOHIDE;
 		// Should draw text?
 		bool drawBarText = c_ReticleBarsText.GetBool();
-		
+
 		double coverAngle = BARCOVERANGLE;
 		let lookTC = lookControllers[consoleplayer];
 		if (!lookTC)
@@ -2034,14 +2036,14 @@ class JGPUFH_FlexibleHUD : EventHandler
 		genRoundMaskTransfOuter.Clear();
 		genRoundMaskTransfOuter.Scale((secondaryMaskSize, secondaryMaskSize));
 		genRoundMaskTransfOuter.Translate(screenCenter);
-		
+
 		// Font position and scale setup:
 		HUDFont hfnt = numHUDFont;
 		Font fnt = hfnt.mFont;
 		// We need to do a lot here. The text strings, if shown, have to be shown
 		// in specific places, depending on where the bar is located (left, top,
 		// right, bottom), and also whether it's an inner bar or an outer bar.
-		// So, we need two sets of positions and two sets of flags (for inner 
+		// So, we need two sets of positions and two sets of flags (for inner
 		// and outer). Font height also plays a role for vertical positioning.
 		// And, obviously, the angle at which the bar is rotated. All of this
 		// can be set up by the player by changing the appropriate CVar.
@@ -2118,7 +2120,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 				DisableMask();
 			}
 		}
-		
+
 
 		Ammo am1, am2;
 		[am1, am2] = statusbar.GetCurrentAmmo();
@@ -2322,7 +2324,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 				{
 					if (jgphud_debug)
 						Console.Printf(
-							"Slot \cF%d\c-, index \cF%d\c-, weapon \cD%s\c-. Pushing into the \cEWeaponSlotData\c- array", 
+							"Slot \cF%d\c-, index \cF%d\c-, weapon \cD%s\c-. Pushing into the \cEWeaponSlotData\c- array",
 							sn,
 							s,
 							weap.GetClassName()
@@ -2364,7 +2366,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 
 		if (c_drawWeaponSlots.GetInt() == DM_AUTOHIDE && slotsDisplayTime <= 0)
 			return;
-		
+
 		// Always run to make sure the slot data
 		// is properly set up:
 		GetWeaponSlots();
@@ -2465,10 +2467,10 @@ class JGPUFH_FlexibleHUD : EventHandler
 					let weap = Weapon(CPlayer.mo.FindInventory(w));
 					if (!weap || weap.amount <= 0)
 						continue;
-					
+
 					slotValid = true;
 					DrawOneWeaponSlot(weap, wpos, flags, box, wsd.slot);
-					
+
 					// Move the box to the next index
 					// If it's vertical, move the box sideways:
 					if (vertical)
@@ -2525,7 +2527,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 			{
 				weap = sister;
 			}
-		}		
+		}
 		if (!weap)
 			return;
 
@@ -2533,7 +2535,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 		// Compare this weapon to readyweapon and pendingweapon:
 		Weapon rweap = Weapon(CPlayer.readyweapon);
 		// MUST explicitly cast pendingweapon as Weapon, otherwise
-		// the pointer won't be properly null-checked (since this 
+		// the pointer won't be properly null-checked (since this
 		// is set to WP_NOCHANGE rather than an actual Actor(null)
 		// pointer when there's no pendingweapon):
 		Weapon pweap = Weapon(CPlayer.pendingweapon);
@@ -2557,7 +2559,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 			BackgroundFill(pos.x, pos.y, box.x, box.y, flags);
 		}
 		statusbar.DrawTexture(statusbar.GetIcon(weap, 0, true), pos + box*0.5, flags|StatusBarCore.DI_ITEM_CENTER, box: box);
-		
+
 		// draw small ammo bars at the bottom of the box:
 		double barheight = box.y * 0.05;
 		double barPosY = pos.y + box.y - barheight;
@@ -2578,7 +2580,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 			double barWidth = LinearMap(am2.amount, 0, am2.maxamount, 0., box.x, true);
 			statusbar.Fill(amCol2, pos.x, barPosY, barWidth, barheight, flags);
 		}
-		
+
 		// draw slot number in the bottom right corner of the box:
 		if (slot != -1)
 		{
@@ -2642,7 +2644,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 		int lt = Level.mapTime;
 		if (!prevLevelTime)
 			prevLevelTime = lt;
-		
+
 		if (lt > prevLevelTime)
 		{
 			prevPlayerAngle = CPlayer.mo.angle;
@@ -2659,7 +2661,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 		// Cache the CVar if it hasn't been cached yet:
 		if (!c_drawMinimap)
 			c_drawMinimap = CVar.GetCvar('jgphud_DrawMinimap', CPlayer);
-		
+
 		int shouldDraw = c_DrawMinimap.GetInt();
 
 		// Check CVar values:
@@ -2680,7 +2682,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 			drawmap = false;
 			drawradar = false;
 		}
-		
+
 		return drawmap, drawradar;
 	}
 
@@ -2735,7 +2737,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 			mapDataPos.y /= ASPECTSCALE;
 		}
 		DrawMapData(mapDataPos, flags, msize.x, 0.5);
-		
+
 		// If the actual minimap is disabled, stop here:
 		if (!drawMap && !drawradar)
 		{
@@ -2775,11 +2777,11 @@ class JGPUFH_FlexibleHUD : EventHandler
 		Color baseCol = GetHUDBackground();
 		double edgeThickness = 1 * hudscale.x;
 		double backAlpha = Clamp(c_MinimapOpacity.GetFloat(), 0.0, 1.0);
-		
+
 		// Fill the shape with the outline color
 		// (remember than DrawShapeFill is BGR, not RGB):
 		Screen.DrawShapeFill(RGB2BGR(baseCol), backAlpha, shapeToUse);
-		
+
 		// Scale the shape down to draw the black background:
 		minimapTransform.Clear();
 		minimapTransform.Scale((size-edgeThickness,size-edgeThickness));
@@ -2794,7 +2796,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 		// Draw background:
 		color backCol = c_minimapBackColor.GetInt();
 		Screen.DrawShapeFill(RGB2BGR(backCol), backAlpha, shapeToUse);
-		
+
 		// Draw the minimap lines:
 		if (drawmap)
 		{
@@ -2832,7 +2834,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 		Screen.DrawShapeFill(RGB2BGR(youcolor), 1.0, minimapShape_Arrow);
 
 		DrawCardinalDirections(pos, playerAngle, size);
-		
+
 		DisableMask();
 	}
 
@@ -2847,7 +2849,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 	{
 		if (!c_MinimapZoom)
 			return 1.0;
-		
+
 		return Clamp(c_MinimapZoom.GetFloat(), 0.1, 10.0);
 	}
 
@@ -2855,7 +2857,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 	{
 		if (!c_MinimapSize)
 			return 64;
-		
+
 		return c_MinimapSize.GetFloat();
 	}
 
@@ -2893,24 +2895,24 @@ class JGPUFH_FlexibleHUD : EventHandler
 	{
 		if (!ln)
 			return false;
-		
+
 		// Don't draw if it's explicitly set to 'hidden'
 		// in the map editor:
 		if (ln.flags & Line.ML_DONTDRAW)
 			return false;
-		
+
 		// If this line hasn't been seen yet, only draw
 		// it if the user set the specified CVAR to true:
 		if (!(ln.flags & Line.ML_MAPPED) && (!c_minimapDrawUnseen || c_minimapDrawUnseen.GetFloat() <= 0))
 			return false;
-		
+
 		// Always draw one-sided lines:
 		if (!(ln.flags & Line.ML_TWOSIDED))
 			return true;
-		
+
 		// Otherwise it's a double-sided line. We need to
 		// do a series of extra checks.
-		
+
 		// Always draw lines that have a special attached:
 		if (ln.special)
 			return true;
@@ -2923,7 +2925,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 		// functions as a railing:
 		if (ln.flags & Line.ML_RAILING || ln.flags & Line.ML_3DMIDTEX)
 			return true;
-		
+
 		// Draw it if any of its sidedefs have a mid
 		// texture at all (means it's visually important):
 		for (int i = 0; i < ln.sidedef.Size(); i++)
@@ -2935,7 +2937,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 			if (tex && tex.IsValid())
 				return true;
 		}
-		
+
 		// Get sectors adjacent to the line:
 		Sector sf = ln.backsector;
 		Sector ff = ln.frontsector;
@@ -2945,7 +2947,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 		{
 			return false;
 		}
-		
+
 		// Draw if there are any 3D floors attached to any
 		// of the line's sectors:
 		if (sf.Get3DFloorCount() > 0 || ff.Get3DFloorCount() > 0)
@@ -2966,7 +2968,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 		{
 			return true;
 		}
-		
+
 		// If all of those checks have failed, this linedef
 		// is an invisible divisor (perhaps created for the
 		// purposes of sector lighting) and drawing it
@@ -3006,7 +3008,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 			Line ln = mapLines[i];
 			if (!ln)
 				continue;
-				
+
 			// Get vertices and scale them in accordance
 			// with zoom value and hudscale:
 			Vector2 lp1 = ln.v1.p;
@@ -3139,7 +3141,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 		}
 		if (!lock)
 			return -1;
-		
+
 		return Key.GetMapColorForLock(lock);
 	}
 
@@ -3171,7 +3173,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 	{
 		if (!minimapShape_Arrow || !shape_disk || !minimapTransform)
 			return;
-		
+
 		bool drawAll = c_MinimapEnemyDisplay.GetBool();
 		Shape2D shapeTouse = c_MinimapEnemyShape.GetBool() ? shape_disk : minimapShape_Arrow;
 
@@ -3213,7 +3215,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 			let marker = mapMarkers[i];
 			if (!marker)
 				continue;
-			
+
 			if (!CPlayer.mo || CPlayer.mo.Distance2DSquared(marker) > distance*distance)
 				continue;
 
@@ -3389,7 +3391,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 	{
 		if (!c_drawPowerups || !c_drawPowerups.GetBool())
 			return;
-		
+
 		bool vertical = c_drawPowerups.GetInt() == 1;
 		bool previewMode;
 		// Calculate height of the block:
@@ -3551,7 +3553,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 
 		// Calculate the size of the key block
 		// If there are 3 keys or fewer: columns = total keys, and rows = 1.
-		// Otherwise, columns are square root of the total number 
+		// Otherwise, columns are square root of the total number
 		// of keys, ceil'd:
 		int columns = totalKeys > 3 ? ceil(sqrt(totalkeys)) : totalKeys;
 		// Rows are total number of keys / rows.
@@ -3561,7 +3563,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 		width = (iconsize + indent) * columns + indent;
 		height = (iconsize + indent) * rows;
 		Vector2 pos = AdjustElementPos((0,0), flags, (width, height), ofs);
-		
+
 		int style = STYLE_Normal;
 		double alpha = 1.0;
 		// altered visuals for preview mode:
@@ -3594,7 +3596,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 			{
 				kpos.x += iconsize + indent;
 			}
-			// Otherwise reached the final column - 
+			// Otherwise reached the final column -
 			// reset x pos and move y pos:
 			else
 			{
@@ -3613,7 +3615,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 	}
 
 	ui bool ShouldDrawInvBar(int numfields)
-	{		
+	{
 		// Perform the usual checks first:
 		if (!c_drawInvBar.GetBool())
 			return false;
@@ -3627,7 +3629,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 		// Check the player has a selected item:
 		if (!CPlayer.mo.InvSel)
 			return false;
-		
+
 		return true;
 	}
 
@@ -3749,7 +3751,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 				posx -= sizex;
 			}
 		}
-		
+
 		// Null-check prevInvSel (will only run once):
 		if (!prevInvSel)
 		{
@@ -3792,7 +3794,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 		{
 			// Modify alpha and scale based on how far the icon is from the center:
 			double alph = LinearMap(i, 0, maxField, 1.0, 0.5);
-			// If an item is selected (invbar is inactive) but the "always show 
+			// If an item is selected (invbar is inactive) but the "always show
 			// invbar" CVar is true, make all items except selected one more
 			// translucent:
 			if (i != 0 && !statusbar.IsInventoryBarVisible() && c_AlwaysShowInvBar.GetBool())
@@ -3817,7 +3819,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 			if (maxfield > 0)
 			{
 				// Keep going right until the edge:
-				if (i < maxField) 
+				if (i < maxField)
 				{
 					i++;
 					item = NextItem(item);
@@ -3833,7 +3835,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 				}
 			}
 			// going left:
-			else 
+			else
 			{
 				// Keep going left until the edge:
 				if (i > maxField)
@@ -3902,7 +3904,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 	}
 
 	ui transient CVar c_enable;
-	
+
 	ui transient CVar c_BackColor;
 	ui transient CVar c_BackAlpha;
 	ui transient CVar c_BackTexture;
@@ -3941,7 +3943,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 	ui transient CVar c_InvBarPos;
 	ui transient CVar c_InvBarX;
 	ui transient CVar c_InvBarY;
-	
+
 	ui transient CVar c_drawDamageMarkers;
 
 	ui transient CVar c_drawWeaponSlots;
@@ -4207,7 +4209,7 @@ class JGPUFH_FlexibleHUD : EventHandler
 			c_ReticleBarsEnemy = CVar.GetCvar('jgphud_ReticleBarsEnemy', CPlayer);
 		if (!c_ReticleBarsWidth)
 			c_ReticleBarsWidth = CVar.GetCvar('jgphud_ReticleBarsWidth', CPlayer);
-			
+
 		if (!c_drawCustomItems)
 			c_drawCustomItems = CVar.GetCvar('jgphud_DrawCustomItems', CPlayer);
 		if (!c_CustomItemsIconSize)
