@@ -1637,7 +1637,14 @@ class JGPUFH_FlexibleHUD : EventHandler
 		}
 		else
 		{
-			DrawColorString(cColor, fnt, String.Format("%3d", healthAmount), (barPosX, iconPos.y - fy*0.5), flags, scale: fntScale);
+			//DrawColorString(cColor, fnt, String.Format("%3d", healthAmount), (barPosX, iconPos.y - fy*0.5), flags, scale: fntScale);
+			statusbar.DrawString(fnt,
+				String.Format("%3d", healthAmount),
+				(barPosX, iconPos.y - fy*0.5),
+				flags,
+				translation: GetPercentageFontColor(healthAmount, healthMaxAmount),
+				scale:fntScale
+			);
 		}
 		
 		// Draw armor bar:
@@ -1731,7 +1738,14 @@ class JGPUFH_FlexibleHUD : EventHandler
 		}
 		else
 		{
-			DrawColorString(armorColor, fnt, String.Format("%3d", armorAmount), (barPosX, iconPos.y - fy*0.5), flags, scale:fntScale);
+			//DrawColorString(armorColor, fnt, String.Format("%3d", armorAmount), (barPosX, iconPos.y - fy*0.5), flags, scale:fntScale);
+			statusbar.DrawString(fnt,
+				String.Format("%3d", armorAmount),
+				(barPosX, iconPos.y - fy*0.5),
+				flags,
+				translation: GetPercentageFontColor(armorAmount, armorMaxAmount),
+				scale:fntScale
+			);
 		}
 	}
 
